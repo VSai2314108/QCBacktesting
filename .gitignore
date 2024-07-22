@@ -1,0 +1,7 @@
+__pycache__
+.venv/
+.idea/
+.vscode/
+*.pyc
+backtests/
+*.DS_Store
