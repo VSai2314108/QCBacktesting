@@ -1,23 +1,22 @@
 from AlgorithmImports import *
 from datetime import datetime
-from utils.indicators.QMParent import QM
+from utils.indicators.QMIndicators.QMParent import QM
 
-class CurrentPriceQM(QM):
+class MonthNumberQM(QM):
     def __init__(self, period):
         # Initialize the base class with the name of the indicator
         QM.__init__(self, self.__class__.__qualname__ + "_" + str(period), period)
-        
-        # Initialize the current price value
-        self.value = 0
+        self.warm_up_period = 1
+        self.value = None
 
     @property
     def IsReady(self):
         # The indicator is always ready since it only needs the current price
-        return True
+        return not self.value is None
 
     def update(self, tradebar: TradeBar):
         # Update the current price value with the latest tradebar value
-        self.value = tradebar.value
+        self.value = tradebar.end_time.month
         self.temp_value = self.value
         self.values.append(self.value)
         

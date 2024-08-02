@@ -1,6 +1,1 @@
-{
-    "algorithm-language": "Python",
-    "parameters": {},
-    "description": "",
-    "local-id": 649254058
-}
+{"algorithm-language": "Python", "parameters": {"STRATEGY": "None", "PORTFOLIO": "portfolio"}, "description": "", "local-id": 649254058}

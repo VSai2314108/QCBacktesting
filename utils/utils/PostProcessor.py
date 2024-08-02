@@ -3,18 +3,11 @@ import os
 import zipfile
 import json
 from matplotlib import pyplot as plt
+import glob
 
-# Initialize starting equity
-initial_equity = 100000
 
-# Path to the data directory
-data_directory = "../data/equity/usa/daily/"
-path_to_backtest = "/Users/vsai23/Workspace/MBQC2/QCBacktesting/backtests/2024-07-26_10-37-40/1905905250-order-events.json"
-with open(path_to_backtest) as file:
-    orders = json.load(file)
-
-# Function to read data from a zip file and return a DataFrame
 def read_data_from_zip(symbol):
+    data_directory = "../data/equity/usa/daily/"
     file_path = os.path.join(data_directory, f"{symbol.lower()}.zip")
     with zipfile.ZipFile(file_path, 'r') as zip_ref:
         with zip_ref.open(f"{symbol.lower()}.csv") as file:
@@ -25,7 +18,13 @@ def read_data_from_zip(symbol):
             df[['Open', 'High', 'Low', 'Close']] = df[['Open', 'High', 'Low', 'Close']] / 10000
             return df
 
-def process_orders(orders):
+def process_orders(path_to_backtest, initial_equity = 100000):
+    # handle file path with * in it
+    if '*' in path_to_backtest:
+        path_to_backtest = glob.glob(path_to_backtest, recursive=True)[0]
+        
+    with open(path_to_backtest) as file:
+        orders = json.load(file)
     orders_df = pd.DataFrame(orders)
     orders_df['DateTime'] = pd.to_datetime(orders_df['time'], unit='s')
     orders_df = orders_df.sort_values(by='DateTime')
@@ -45,11 +44,12 @@ def process_orders(orders):
     # ensure all dates in the orders_df are in the all_trading_days if not print them and add them
     for date in orders_df.index:
         if date.date() not in all_trading_days:
-            print(date.date())
             all_trading_days = all_trading_days.append(pd.DatetimeIndex([date.date()]))
 
+    # portfolio dict
+    track_port = {}
+    
     for date in all_trading_days:
-        print(date)
         # Filter orders up to the current date
         day_orders = orders_df.loc[orders_df.index.date == date]
 
@@ -69,7 +69,7 @@ def process_orders(orders):
 
         # Get the latest price for each symbol in the portfolio
         equity_value = 0
-        print(portfolio)
+        percentage_port = {}
         for sym in portfolio:
             df = read_data_from_zip(sym)
             # Ensure we have data for the date and after
@@ -77,6 +77,14 @@ def process_orders(orders):
             if not df.empty:
                 last_close = df.iloc[-1]['Close']
                 equity_value += portfolio[sym] * last_close
+                percentage_port[sym] = portfolio[sym] * last_close
+        
+        # convert percentage_port to percentage
+        total = sum(percentage_port.values())
+        for key in percentage_port:
+            percentage_port[key] = round(percentage_port[key] / total, 2)
+        track_port[date] = percentage_port
+            
 
         account_value = cash + equity_value
 
@@ -84,6 +92,11 @@ def process_orders(orders):
 
     # Create a DataFrame for equity values
     equity_df = pd.DataFrame(equity_values)
+    
+    # STEP 0 - SAVE PORTFOLIO as csv
+    track_port_df = pd.DataFrame(track_port)
+    track_port_df = track_port_df.T
+    track_port_df.to_csv(f"{path_to_backtest.replace('order-events.json', 'portfolio.csv')}")
 
     # STEP 1 EQUITY CURVE
     equity_df.plot(x='Date', y=['Account'], title='Equity Curve')
@@ -110,8 +123,4 @@ def process_orders(orders):
     equity_df['Month'] = equity_df['Date'].dt.to_period('M')
     monthly_returns = equity_df.groupby('Month')['Account'].last().pct_change()
     monthly_returns.plot(kind='bar', title='Monthly Returns')
-    plt.savefig(f"{path_to_backtest.replace('order-events.json', 'monthly_returns.png')}")    
-    
-
-if __name__ == "__main__":
-    process_orders(orders)
+    plt.savefig(f"{path_to_backtest.replace('order-events.json', 'monthly_returns.png')}")

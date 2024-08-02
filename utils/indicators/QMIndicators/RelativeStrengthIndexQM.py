@@ -1,6 +1,6 @@
 from AlgorithmImports import *
 from datetime import datetime
-from utils.indicators.QMParent import QM
+from utils.indicators.QMIndicators.QMParent import QM
 
 class RelativeStrengthIndexQM(QM):
     def __init__(self, period):
