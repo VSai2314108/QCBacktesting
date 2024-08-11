@@ -1,9 +1,10 @@
 # the main method here will function as a bash script and update data before invoke the main.py script
 from datetime import datetime
 import uuid
-from utils.utils.QMUtils import parse_strategy
-from utils.utils.DataUpdater import update_data
-from utils.utils.PostProcessor import process_orders
+from src.utils.QMUtils import parse_strategy
+from src.utils.DataUpdater import update_data
+from src.utils.PostProcessor import build_stats_from_backtest
+from src.utils.PostProcessorOrg import process_orders
 import argparse
 import os
 import glob
@@ -50,8 +51,9 @@ def execute_strategy(strategy=None, portfolio=None):
     os.system(" && ".join(commands))
     
     # GENERATE CHARTS
-    process_orders(f"backtests/{backtest_name}/*-order-events.json")
+    # process_orders(f"backtests/{backtest_name}/*-order-events.json")
     
+    build_stats_from_backtest(backtest_name)
     
 
 if __name__ == "__main__":

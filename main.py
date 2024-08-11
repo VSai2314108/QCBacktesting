@@ -2,15 +2,15 @@
 from AlgorithmImports import *
 import json
 from enum import Enum
-from utils.portfoliomanagement.subsystemtypes.QMSubsytem import QMSubsytem
-from utils.utils.QMUtils import parse_strategy
-from utils.utils.QMUtils import evaluate_strategy
-from utils.portfoliomanagement.PortfolioCreator import parse_portfolio
-from utils.portfoliomanagement.PortfolioInst import PortfolioInst
+from src.portfoliomanagement.subsystemtypes.QMSubsytem import QMSubsytem
+from src.utils.QMUtils import parse_strategy
+from src.utils.QMUtils import evaluate_strategy
+from src.portfoliomanagement.PortfolioCreator import parse_portfolio
+from src.portfoliomanagement.PortfolioInst import PortfolioInst
 # endregion
 
 # region mappings
-from utils.indicators.QMIndicators import CumulativeReturnQM, ExponentialMovingAverageQM, MonthNumberQM, MovingAverageQM, MovingAverageReturnsQM, RelativeStrengthIndexQM, CurrentPriceQM, MaxDrawdownQM, VolatilityQM
+from src.indicators.QMIndicators import CumulativeReturnQM, ExponentialMovingAverageQM, MonthNumberQM, MovingAverageQM, MovingAverageReturnsQM, RelativeStrengthIndexQM, CurrentPriceQM, MaxDrawdownQM, VolatilityQM
 mapping = {
     "CumulativeReturn": CumulativeReturnQM,
     "MovingAverage": MovingAverageQM,
@@ -24,7 +24,7 @@ mapping = {
     "Volatility": VolatilityQM
 }
 
-from utils.utils.QMUtils import *
+from src.utils.QMUtils import *
 # endregion
 
 class IncantationType(Enum):
@@ -114,4 +114,4 @@ class QCBacktesting(QCAlgorithm):
     
     def on_end_of_algorithm(self):
        if self.portfolio_backtest:
-            self.portfolioInst.write()
+            self.portfolioInst.write_portfolio()
