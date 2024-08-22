@@ -25,6 +25,9 @@ def parse_strategy(strategy: Dict[str, Union[str, dict]]) -> Tuple[List[Tuple[st
     
     def parse_condition(condition):
         # Function to parse a condition dictionary and extract indicators and tickers
+        if "conditions" in condition:
+            for sub_condition in condition["conditions"]:
+                parse_condition(sub_condition)
         if condition:
             lh_indicator = condition.get("lh_indicator", {})
             rh_indicator = condition.get("rh_indicator", {})
@@ -143,8 +146,8 @@ def weighted_strategy(algo, incantation: Dict[str, dict], cur_weight: float) -> 
         inverse_volatilities = []
         for output in outputs:
             temp_inverse_vol_sum = 0
-            for ticker, weight in output: # not sure if weight is used here
-                volatility_key = f"Volatility_{ticker}_{volatility_window}"
+            for item in output: # not sure if weight is used here
+                volatility_key = f"Volatility_{item[0]}_{volatility_window}"
                 temp_inverse_vol_sum += 1/algo.indicators.get(volatility_key).value
             inverse_volatilities.append(temp_inverse_vol_sum)
         
@@ -154,6 +157,7 @@ def weighted_strategy(algo, incantation: Dict[str, dict], cur_weight: float) -> 
             for i in range(len(output)):
                 output[i] = (output[i][0], output[i][1] * (inverse_volatility / total_inverse_volatility))
         
+        outputs = [item for sublist in outputs for item in sublist]
         return outputs
             
 def ticker_strategy(algo, incantation: Dict[str, dict], cur_weight: float) -> List[Tuple[str, float]]:
@@ -202,8 +206,8 @@ def filtered_strategy(algo, incantation: Dict[str, dict], cur_weight: float) -> 
         inverse_volatilities = []
         for output in outputs:
             temp_inverse_vol_sum = 0
-            for ticker, weight in output:
-                volatility_key = f"Volatility_{ticker}_{inverse_volatility_window}"
+            for item in output:
+                volatility_key = f"Volatility_{item[0]}_{inverse_volatility_window}"
                 temp_inverse_vol_sum += 1/algo.indicators.get(volatility_key).value
             inverse_volatilities.append(temp_inverse_vol_sum)
         

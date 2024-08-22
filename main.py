@@ -1,22 +1,19 @@
 # region imports
 from AlgorithmImports import *
-import json
 from enum import Enum
 from src.portfoliomanagement.subsystemtypes.QMSubsytem import QMSubsytem
-from src.utils.QMUtils import parse_strategy
-from src.utils.QMUtils import evaluate_strategy
 from src.portfoliomanagement.PortfolioCreator import parse_portfolio
 from src.portfoliomanagement.PortfolioInst import PortfolioInst
 # endregion
 
 # region mappings
-from src.indicators.QMIndicators import CumulativeReturnQM, ExponentialMovingAverageQM, MonthNumberQM, MovingAverageQM, MovingAverageReturnsQM, RelativeStrengthIndexQM, CurrentPriceQM, MaxDrawdownQM, VolatilityQM
+from src.indicators.QMIndicators import CumulativeReturnQM, ExponentialMovingAverageQM, MonthNumberQM, MovingAverageQM, MovingAverageReturnsQM, RelativeStrengthIndexQM, CurrentPriceQM, MaxDrawdownQM, VolatilityQM, DrawdownQM
 mapping = {
     "CumulativeReturn": CumulativeReturnQM,
     "MovingAverage": MovingAverageQM,
     "RelativeStrengthIndex": RelativeStrengthIndexQM,
     "CurrentPrice": CurrentPriceQM,
-    "MaxDrawdown": MaxDrawdownQM,
+    "Drawdown": DrawdownQM,
     "Month": MonthNumberQM,
     "ExponentialMovingAverage": ExponentialMovingAverageQM,
     "MaxDrawdown": MaxDrawdownQM,

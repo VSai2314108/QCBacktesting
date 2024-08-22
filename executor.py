@@ -1,10 +1,8 @@
 # the main method here will function as a bash script and update data before invoke the main.py script
 from datetime import datetime
-import uuid
 from src.utils.QMUtils import parse_strategy
 from src.utils.DataUpdater import update_data
 from src.utils.PostProcessor import build_stats_from_backtest
-from src.utils.PostProcessorOrg import process_orders
 import argparse
 import os
 import glob
@@ -27,6 +25,10 @@ def execute_strategy(strategy=None, portfolio=None):
             except Exception as e:
                 print(f"Error processing {strategy_file}: {e}")
     
+    # VERIFY STRATEGY AND PORTFOLIO
+    if not strategy:
+        strategy = "None"
+        
     backtest_name = (portfolio if portfolio else strategy)+"_"+datetime.today().strftime("%Y%m%d_%H%M%S")
     
     # RUN BACKTEST
@@ -63,6 +65,5 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    execute_strategy(args.strategy, args.portfolio)
-    
+    execute_strategy(args.strategy, args.portfolio)    
     
